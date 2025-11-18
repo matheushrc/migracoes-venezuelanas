@@ -1,6 +1,9 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
 FROM ghcr.io/astral-sh/uv:0.9.10-python3.14-bookworm-slim
 
+# Install curl for health checks
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /src
 
 # Keeps Python from generating .pyc files in the container
