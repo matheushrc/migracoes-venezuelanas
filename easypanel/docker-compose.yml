@@ -1,0 +1,22 @@
+services:
+  easypanel-setup:
+    image: easypanel/easypanel:2.23.0
+    container_name: easypanel-setup
+    volumes:
+      - data:/etc/easypanel
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: setup
+    restart: "no"
+    network_mode: host
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 8G
+        reservations:
+          cpus: "2.0"
+          memory: 4G
+
+volumes:
+  data:
+    driver: local
