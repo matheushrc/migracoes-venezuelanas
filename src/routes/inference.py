@@ -77,8 +77,8 @@ def create_inference(
 ):
     import os
 
-    from src.agents import GoogleAgent
-    from src.models import InferenceCreate
+    from agents import GoogleAgent
+    from models import InferenceCreate
 
     api_key = os.environ.get("GOOGLE_API_KEY", "")
 
