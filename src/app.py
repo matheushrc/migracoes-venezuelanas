@@ -1,7 +1,10 @@
 from fastapi import FastAPI, status
 from fastapi.responses import RedirectResponse
 
+from routes import inference
+
 app = FastAPI()
+app.include_router(inference.router)
 
 
 @app.get("/")

@@ -88,7 +88,7 @@ def create_inference(
 
     response = google_agent.get_inference(
         inference_data=InferenceCreate(
-            user_prompt="Hello, how are you?",
+            user_prompt=user_prompt,
         ),  # type: ignore
         agent=agent,
     )
