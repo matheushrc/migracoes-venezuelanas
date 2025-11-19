@@ -34,4 +34,4 @@ ENV PORT=8501
 HEALTHCHECK CMD curl --fail http://localhost:${PORT}/health || exit 1
 
 # Run the application using uv run with correct module path
-CMD ["uv", "run", "--no-sync", "uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8501"]
+CMD ["uv", "run", "--no-sync", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8501"]
