@@ -22,7 +22,7 @@ COPY pyproject.toml .
 RUN uv pip install --system --verbose -r pyproject.toml
 
 # Copy everything into the working directory
-COPY src/ ./app/
+COPY src/ ./
 
 # Expose default port (Cloud Run sets $PORT at runtime; expose for clarity)
 EXPOSE 8501
