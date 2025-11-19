@@ -24,7 +24,7 @@ InferenceType: TypeAlias = Literal["IMAGE", "TEXT"]
 
 @router.post(
     "",
-    response_model=OCRResponse,
+    response_model=str,
     status_code=status.HTTP_201_CREATED,
     summary="Enfileira um documento de contrato para processamento de OCR.",
     description=textwrap.dedent("""
