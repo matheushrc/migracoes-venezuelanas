@@ -12,7 +12,7 @@ router = APIRouter(prefix="/inference", tags=["inference"])
 Status: TypeAlias = Literal["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
 
 
-class OCRResponse(BaseModel):
+class InferenceResponse(BaseModel):
     document_id: str = Field(..., description="ID do processamento do documento")
     ocr_id: str = Field(..., description="ID do job OCR")
     status: Status = Field(..., description="Status de ambos os trabalhos")
@@ -55,7 +55,7 @@ InferenceType: TypeAlias = Literal["IMAGE", "TEXT"]
     """),
     responses={
         status.HTTP_201_CREATED: {
-            "model": OCRResponse,
+            "model": InferenceResponse,
             "description": "Trabalho de OCR de Contrato criado com sucesso",
         },
         status.HTTP_400_BAD_REQUEST: {
@@ -65,7 +65,7 @@ InferenceType: TypeAlias = Literal["IMAGE", "TEXT"]
             "description": "Contrato não encontrado",
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": OCRResponse,
+            "model": InferenceResponse,
             "description": "Erro interno do servidor",
         },
     },

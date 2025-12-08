@@ -6,7 +6,7 @@ from pydantic_ai import Agent, BinaryContent, Tool
 from pydantic_ai.models.google import GoogleModel, GoogleModelSettings
 from pydantic_ai.providers.google import GoogleProvider
 
-from models import InferenceCreate
+from src.models import InferenceCreate
 
 
 class GoogleAgent:
@@ -15,6 +15,7 @@ class GoogleAgent:
 
     def create_agent(
         self,
+        deps_type: Optional[Type[BaseModel]] = None,
         output_type: Optional[Union[Type[BaseModel], type, str]] = str,
         model_name: str = "gemini-flash-lite-latest",
         retries: int = 3,
@@ -30,7 +31,8 @@ class GoogleAgent:
             "output_type": output_type,
             "retries": retries,
         }
-
+        if deps_type is not None:
+            agent_kwargs["deps_type"] = deps_type
         if system_prompt is not None:
             agent_kwargs["system_prompt"] = system_prompt
         if model_settings:
@@ -48,7 +50,7 @@ class GoogleAgent:
             **agent_kwargs,
         )
 
-    def get_inference(self, inference_data: InferenceCreate, agent: Agent) -> Any:
+    async def get_inference(self, inference_data: InferenceCreate, agent: Agent) -> Any:
         if inference_data.invoke_params:
             inference_data.user_prompt = inference_data.user_prompt.format(
                 **inference_data.invoke_params
@@ -83,7 +85,7 @@ class GoogleAgent:
             else inference_data.user_prompt
         )
 
-        response = agent.run_sync(
+        response = await agent.run(
             user_prompt=run_input,
             **run_kwargs,
         )
