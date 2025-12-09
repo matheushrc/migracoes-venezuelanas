@@ -1,3 +1,5 @@
+from typing import Any, cast
+
 import pandas as pd
 import pydeck as pdk
 import streamlit as st
@@ -126,19 +128,21 @@ if selected_persons:
     )
 
     # Create deck with tooltip
+    tooltip_config: dict[str, Any] = {
+        "text": "Entrevistado {id}\n{source_address} → {target_address}",
+        "style": {
+            "backgroundColor": "steelblue",
+            "color": "white",
+            "fontSize": "14px",
+            "padding": "10px",
+        },
+    }
+
     deck = pdk.Deck(
         layers=[arc_layer, scatter_layer],
         initial_view_state=view_state,
-        map_style=None,  # Use Streamlit theme
-        tooltip={
-            "text": "Entrevistado {id}\n{source_address} → {target_address}",
-            "style": {
-                "backgroundColor": "steelblue",
-                "color": "white",
-                "fontSize": "14px",
-                "padding": "10px",
-            },
-        },
+        map_style=cast(str, None),  # Use Streamlit theme
+        tooltip=cast(bool, tooltip_config),
     )
 
     st.pydeck_chart(deck)
