@@ -1,7 +1,8 @@
-ENTREVISTA_PROMPT = """Analise a entrevista fornecida e extraia as informações a seguir:
+ENTREVISTA_PROMPT: str = """Analise a entrevista fornecida e extraia e categorize as informações a seguir:
 
-- Motivações para Migrar da Venezuela:
-    - motivos_migracao: Listar todos os motivos que levaram a pessoa entrevistada a migrar da Venezuela até exaurir todas as razões mencionadas. Forneça uma lista de palavras ou frases curtas que representem esses motivos.
+- Motivações para Migrar da Venezuela: Dividir os motivos de migração em duas categorias principais, baseando-se na distinção entre o que é "factual/econômico" (ligado a dados e condições objetivas ou de "Realidade") e o que é "político/afetivo" (ligado a ideologia, emoção, crenças ou circunstâncias de polarização e perseguição, baseados em "Percepção").
+    - motivos_fatuais_economicos: Listar todas as razões mencionadas que se referem a condições objetivas ou materiais (a "realidade" de mercado, pobreza, escassez ou a busca por estabilidade econômica). Forneça uma lista de palavras ou frases curtas.
+    - motivos_politicos_afetivos: Listar todas as razões mencionadas que se referem a percepções subjetivas, apelos à emoção, crenças pessoais, ressentimento social ou questões de perseguição política. Incluir motivações ligadas à polarização e ao alinhamento ou antagonismo ideológico/partidário. Forneça uma lista de palavras ou frases curtas.
 - Movimentações Trabalhistas:
     Liste todas as movimentações trabalhistas da pessoa entrevistada, incluindo cargos ocupados, locais de trabalho, tipos de movimento (admissão, desligamento, transferência, etc.), motivos associados e datas. Para cada movimentação, forneça:
         - descricao_atividade: descrição da atividade ou cargo ocupado pela pessoa entrevistada.

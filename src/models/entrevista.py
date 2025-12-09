@@ -75,13 +75,22 @@ class Deslocamento(BaseModel):
 
 
 class Entrevista(BaseModel):
-    motivos_migracao: List[str] = Field(
+    motivos_fatuais_economicos: List[str] = Field(
         ...,
-        description="Lista de motivos que levaram a pessoa entrevistada a migrar. Lista de palavras ou frases curtas.",
+        description="Lista de motivos baseados em condições objetivas ou materiais (Realidade), como falta de emprego, escassez de produtos básicos, ou busca por melhorias financeiras. Lista de palavras ou frases curtas.",
         examples=[
+            "Falta de medicamentos essenciais",
             "Busca por melhores oportunidades de emprego",
-            "Reunificação familiar",
-            "Fuga de violência ou perseguição",
+            "Pobreza e fome",
+        ],
+    )
+    motivos_politicos_afetivos: List[str] = Field(
+        ...,
+        description="Lista de motivos baseados em elementos subjetivos, emocionais, crenças ou perseguição política (Percepção/Afeto). Incluir fuga de violência, medo de repressão ou alinhamento político.",
+        examples=[
+            "Fuga de perseguição política",
+            "Necessidade de coesão social fora do país",
+            "Medo da violência estatal",
         ],
     )
     movimentacoes: List[Movimentacao] = Field(
