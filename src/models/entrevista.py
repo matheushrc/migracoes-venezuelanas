@@ -3,19 +3,6 @@ from typing import List, Literal, Optional, TypeAlias
 
 from pydantic import BaseModel, Field
 
-
-class Motivacao(BaseModel):
-    motivos_migracao: List[str] = Field(
-        ...,
-        description="Lista de motivos que levaram a pessoa entrevistada a migrar. Lista de palavras ou frases curtas.",
-        examples=[
-            "Busca por melhores oportunidades de emprego",
-            "Reunificação familiar",
-            "Fuga de violência ou perseguição",
-        ],
-    )
-
-
 Movimentos: TypeAlias = Literal[
     "Admissão",
     "Desligamento",
@@ -47,7 +34,8 @@ class Movimentacao(BaseModel):
         description="Local onde a pessoa entrevistada trabalhou.",
     )
     setor_atividade: Optional[str] = Field(
-        None, description="Setor de atividade econômica do local de trabalho."
+        None,
+        description="Classe CNAE que representa o setor de atividade econômica do trabalho. Este campo será preenchido posteriormente pela ferramenta classify_job_to_cnae.",
     )
     tipo_movimento: Movimentos = Field(
         ...,
