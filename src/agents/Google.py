@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Type, Union
+from typing import Any
 
 from google import genai
 from pydantic import BaseModel
@@ -6,7 +6,7 @@ from pydantic_ai import Agent, BinaryContent, Tool
 from pydantic_ai.models.google import GoogleModel, GoogleModelSettings
 from pydantic_ai.providers.google import GoogleProvider
 
-from src.models import InferenceCreate
+from src.models import InferenceCreate, TokenUsage
 
 
 class GoogleAgent:
@@ -15,17 +15,18 @@ class GoogleAgent:
 
     def create_agent(
         self,
-        deps_type: Optional[Type[BaseModel]] = None,
-        output_type: Optional[Union[Type[BaseModel], type, str]] = str,
+        deps_type: type[BaseModel] | None = None,
+        output_type: type[BaseModel] | type | str | None = str,
         model_name: str = "gemini-flash-lite-latest",
         retries: int = 3,
-        model_settings: Optional[Dict[str, Any]] = {
+        model_settings: dict[str, Any] | None = {
             "temperature": 1,
             "max_tokens": 65535,
             "top_p": 0.95,
         },
-        system_prompt: Optional[str] = None,
-        tools: Optional[list[Tool]] = None,
+        system_prompt: str | None = None,
+        tools: list[Tool] | None = None,
+        **kwargs: Any,
     ) -> Agent:
         agent_kwargs: dict[str, Any] = {
             "output_type": output_type,
@@ -48,18 +49,22 @@ class GoogleAgent:
                 ),
             ),
             **agent_kwargs,
+            **kwargs,
         )
 
-    async def get_inference(self, inference_data: InferenceCreate, agent: Agent) -> Any:
+    async def get_inference(
+        self,
+        inference_data: InferenceCreate,
+        agent: Agent,
+        model_name: str = "unknown",
+    ) -> tuple[Any, TokenUsage]:
         if inference_data.invoke_params:
             inference_data.user_prompt = inference_data.user_prompt.format(
                 **inference_data.invoke_params
             )
 
-        # Prepare message content with prompt
-        message_content: list[Union[str, BinaryContent]] = [inference_data.user_prompt]
+        message_content: list[str | BinaryContent] = [inference_data.user_prompt]
 
-        # Add image if provided
         if inference_data.image_list:
             if isinstance(inference_data.image_list, bytes):
                 inference_data.image_list = [inference_data.image_list]
@@ -72,11 +77,8 @@ class GoogleAgent:
                         )
                     )
 
-        # Run the agent with the content. If a message history is provided,
-        # pass it as `messages` so the agent can use it as context for follow-up runs.
         run_kwargs = {}
         if inference_data.message_history:
-            # pydantic-ai expects the parameter name `message_history` for prior messages
             run_kwargs["message_history"] = inference_data.message_history
 
         run_input = (
@@ -89,7 +91,8 @@ class GoogleAgent:
             user_prompt=run_input,
             **run_kwargs,
         )
-        return getattr(response, "output", response)
+        token_usage = TokenUsage.from_run_usage(response.usage(), model_name=model_name)
+        return getattr(response, "output", response), token_usage
 
     def run_stream(self, inference_data: InferenceCreate, agent: Agent):
         if inference_data.invoke_params:
@@ -97,10 +100,8 @@ class GoogleAgent:
                 **inference_data.invoke_params
             )
 
-        # Prepare message content with prompt
-        message_content: list[Union[str, BinaryContent]] = [inference_data.user_prompt]
+        message_content: list[str | BinaryContent] = [inference_data.user_prompt]
 
-        # Add image if provided
         if inference_data.image_list:
             if isinstance(inference_data.image_list, bytes):
                 inference_data.image_list = [inference_data.image_list]
@@ -113,7 +114,6 @@ class GoogleAgent:
                         )
                     )
 
-        # Run the agent with the content
         run_kwargs = {}
         if inference_data.message_history:
             run_kwargs["message_history"] = inference_data.message_history

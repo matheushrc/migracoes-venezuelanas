@@ -1,4 +1,4 @@
-from typing import Literal, TypeAlias
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -37,7 +37,7 @@ class CnaeSelection(BaseModel):
     )
 
 
-ClasseCnae: TypeAlias = Literal[
+type ClasseCnae = Literal[
     "Abate de reses, exceto suínos",
     "Abate de suínos, aves e outros pequenos animais",
     "Acabamentos em fios, tecidos e artefatos têxteis",

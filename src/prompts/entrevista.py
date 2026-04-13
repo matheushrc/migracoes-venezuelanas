@@ -1,21 +1,56 @@
-ENTREVISTA_PROMPT: str = """Analise a entrevista fornecida e extraia e categorize as informações a seguir:
+ENTREVISTA_PROMPT: str = """Você é um pesquisador especializado em migrações venezuelanas.
+Analise a entrevista fornecida e extraia as informações estruturadas descritas no schema de saída.
 
-- Motivações para Migrar da Venezuela: Dividir os motivos de migração em duas categorias principais, baseando-se na distinção entre o que é "factual/econômico" (ligado a dados e condições objetivas ou de "Realidade") e o que é "político/afetivo" (ligado a ideologia, emoção, crenças ou circunstâncias de polarização e perseguição, baseados em "Percepção").
-    - motivos_fatuais_economicos: Listar todas as razões mencionadas que se referem a condições objetivas ou materiais (a "realidade" de mercado, pobreza, escassez ou a busca por estabilidade econômica). Forneça uma lista de palavras ou frases curtas.
-    - motivos_politicos_afetivos: Listar todas as razões mencionadas que se referem a percepções subjetivas, apelos à emoção, crenças pessoais, ressentimento social ou questões de perseguição política. Incluir motivações ligadas à polarização e ao alinhamento ou antagonismo ideológico/partidário. Forneça uma lista de palavras ou frases curtas.
-- Movimentações Trabalhistas:
-    Liste todas as movimentações trabalhistas da pessoa entrevistada, incluindo cargos ocupados, locais de trabalho, tipos de movimento (admissão, desligamento, transferência, etc.), motivos associados e datas. Para cada movimentação, forneça:
-        - descricao_atividade: descrição da atividade ou cargo ocupado pela pessoa entrevistada.
-        - localidade: local onde a pessoa entrevistada trabalhou.
-        - setor_atividade: setor de atividade econômica do local de trabalho.
-        - tipo_movimento: tipo de movimento trabalhista relacionado ao cargo e local de trabalho.
-        - motivo_movimento: motivo associado ao movimento trabalhista.
-        - ano: ano em que o movimento trabalhista ocorreu.
-- Deslocamento:
-    Liste as cidades ou locais por onde a pessoa entrevistada passou desde o local de origem até o destino final. Um deslocamento só acontece se ele sair de uma cidade a outra. Para cada local, forneça:
-        - localidade: 
-            - cidade: <nome da cidade>
-            - estado_provincia: <nome do estado ou província, se aplicável>
-            - pais: <sigla do país no formato ISO 3166-1 alpha-3>
-        - motivo: motivo do deslocamento para esta localidade
+## Motivações para migrar
+
+Classifique cada motivação em uma das seis subdivisões abaixo.
+O campo `motivo` deve conter exatamente a string indicada entre aspas — não use paráfrases.
+
+### Motivos Fatuais / Econômicos — dimensão da Realidade
+Condições tangíveis, objetivas e materiais que tornaram a migração necessária ou viável.
+
+- **"Apoio Institucional e Humanitário"** — suporte logístico, material ou estrutural fornecido por
+  organizações (ONGs, governos, igrejas) que objetivamente viabilizou a migração. O tom do trecho é
+  prático e operacional (ex.: transporte, abrigo, documentação, rotas organizadas).
+- **"Busca por Oportunidades Financeiras"** — relatos de procura de emprego, fuga da hiperinflação,
+  necessidade de renda ou busca por estabilidade econômica.
+- **"Escassez e Condições Básicas de Sobrevivência"** — fuga da falta de alimentos, medicamentos ou
+  infraestrutura básica no país de origem.
+
+### Motivos Políticos / Afetivos — dimensão da Percepção/Afeto
+Percepções subjetivas, emoções, crenças e perseguição política que motivaram a migração.
+
+- **"Reunificação e Laços Familiares"** — peso emocional de reconstituir o núcleo familiar ou buscar
+  amparo de parentes que já migraram (ex.: cônjuge que partiu meses antes, tias já estabelecidas no
+  destino).
+- **"Redes de Apoio Comunitário e Religioso"** — senso de pertencimento, segurança emocional e
+  acolhimento proporcionado por grupos sociais ou religiosos. O tom do trecho é afetivo: fraternidade,
+  identidade coletiva, sensação de ser recebido.
+- **"Clima Político e Insegurança"** — desejo de fugir de polarização política, perseguição ideológica
+  ou sensação de opressão pelo Estado.
+
+### Regras de classificação
+
+- Um mesmo trecho pode mapear para subdivisões de **categorias diferentes** quando ambas as dimensões
+  estiverem presentes. Nesse caso, inclua-o nas duas listas com formulações distintas que capturem
+  cada dimensão separadamente.
+  Exemplo típico: uma passagem sobre organização religiosa pode ser
+  "Apoio Institucional e Humanitário" (tom prático) **e** "Redes de Apoio Comunitário e Religioso"
+  (tom afetivo) ao mesmo tempo.
+- Se nenhuma motivação de determinada categoria for mencionada, retorne uma lista vazia para ela.
+
+## Movimentações trabalhistas
+
+Registre todos os vínculos de emprego ou atividade econômica mencionados.
+Deixe `setor_atividade` como `null` — este campo é preenchido por uma etapa posterior do pipeline.
+Se o ano de um vínculo não for mencionado nem puder ser inferido com segurança, use `null`.
+
+## Deslocamento
+
+Registre cada cidade distinta por onde a pessoa passou, incluindo a cidade de origem e o destino final.
+Omita menções a localidades que não representem uma parada real na trajetória (ex.: cidades citadas
+apenas como referência geográfica ou contexto histórico).
+Se apenas o mês e ano forem conhecidos, use o primeiro dia do mês (ex.: 2019-06-01).
+Se somente o ano for conhecido, use 1º de janeiro daquele ano (ex.: 2020-01-01) e registre a
+incerteza no campo `motivo` quando relevante.
 """

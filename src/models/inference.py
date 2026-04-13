@@ -1,9 +1,32 @@
 import string
-from typing import Any, Dict, List, Literal, Optional, TypeAlias, Union
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
+from pydantic_ai.usage import RunUsage
 
-InferenceType: TypeAlias = Literal["IMAGE", "TEXT"]
+type InferenceType = Literal["IMAGE", "TEXT"]
+
+
+class TokenUsage(BaseModel):
+    input_tokens: int = Field(default=0)
+    output_tokens: int = Field(default=0)
+    total_tokens: int = Field(default=0)
+    requests: int = Field(default=0)
+    model_name: str = Field(default="unknown")
+
+    @classmethod
+    def from_run_usage(
+        cls, run_usage: RunUsage, model_name: str = "unknown"
+    ) -> TokenUsage:
+        input_tokens = run_usage.request_tokens or 0
+        output_tokens = run_usage.response_tokens or 0
+        return cls(
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            total_tokens=input_tokens + output_tokens,
+            requests=run_usage.requests or 0,
+            model_name=model_name,
+        )
 
 
 class InferenceCreate(BaseModel):
@@ -13,16 +36,16 @@ class InferenceCreate(BaseModel):
     user_prompt: str = Field(
         ..., description="O prompt a ser enviado para o agente Google"
     )
-    invoke_params: Optional[Dict[str, str]] = Field(
+    invoke_params: dict[str, str] | None = Field(
         None,
         description="Parâmetros adicionais para a invocação do agente, serão formatados no prompt_template",
     )
-    image_list: Optional[Union[bytes, List[bytes]]] = Field(
+    image_list: bytes | list[bytes] | None = Field(
         None, description="Lista de imagens a serem enviadas junto com o prompt"
     )
     image_media_type: str = Field("image/jpeg", description="Tipo de mídia da imagem")
 
-    message_history: Optional[List[Any]] = Field(
+    message_history: list[Any] | None = Field(
         None,
         description="Histórico de mensagens opcional a ser incluído na chamada do agente",
     )

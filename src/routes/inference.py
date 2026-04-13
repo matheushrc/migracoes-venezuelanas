@@ -1,5 +1,5 @@
 import textwrap
-from typing import Annotated, Literal, TypeAlias
+from typing import Annotated, Literal
 
 from fastapi import (
     APIRouter,
@@ -9,7 +9,7 @@ from fastapi import (
 from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/inference", tags=["inference"])
-Status: TypeAlias = Literal["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
+type Status = Literal["QUEUED", "PROCESSING", "COMPLETED", "FAILED"]
 
 
 class InferenceResponse(BaseModel):
@@ -19,7 +19,7 @@ class InferenceResponse(BaseModel):
     message: str = Field(..., description="Mensagem de status")
 
 
-InferenceType: TypeAlias = Literal["IMAGE", "TEXT"]
+type InferenceType = Literal["IMAGE", "TEXT"]
 
 
 @router.post(
@@ -70,15 +70,15 @@ InferenceType: TypeAlias = Literal["IMAGE", "TEXT"]
         },
     },
 )
-def create_inference(
+async def create_inference(
     user_prompt: Annotated[
         str, Form(description="Prompt do usuário para a inferência")
     ],
 ):
     import os
 
-    from agents import GoogleAgent
-    from models import InferenceCreate
+    from src.agents import GoogleAgent
+    from src.models import InferenceCreate
 
     api_key = os.environ.get("GOOGLE_API_KEY", "")
 
@@ -86,7 +86,7 @@ def create_inference(
 
     agent = google_agent.create_agent(system_prompt="You are a helpful assistant.")
 
-    response = google_agent.get_inference(
+    response, _ = await google_agent.get_inference(
         inference_data=InferenceCreate(
             user_prompt=user_prompt,
         ),  # type: ignore
